@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { useLoad, useStore } from '../lib/store.jsx';
-import { Anahit, Aram } from '../components/Avatars.jsx';
+import { Avatar } from '../components/Avatars.jsx';
 import { Empty, ErrorAlert, Icon, Loading, QtyInput, RatingLine, Stars, StockLabel } from '../components/ui.jsx';
 
 export default function Product() {
@@ -117,7 +117,7 @@ export default function Product() {
             <div className="price price-lg">{amd(p.priceAmd)}</div>
             <StockLabel stock={p.stock} />
             <div className="seller-line">
-              <Aram size={42} />
+              <Avatar kind={p.seller.avatar} size={42} />
               <div>
                 <div className="small muted">{t('product.soldBy')}</div>
                 <b>{p.seller.storeName}</b>
@@ -143,7 +143,7 @@ export default function Product() {
             {reviews.data && reviews.data.reviews.length === 0 && <p className="muted" style={{ margin: 0 }}>{t('product.noReviews')}</p>}
             {reviews.data?.reviews.map((r) => (
               <div className="review" key={r.id}>
-                <Anahit size={44} ring="rose" />
+                <Avatar kind={r.avatar} size={44} ring="rose" />
                 <div>
                   <div className="row" style={{ gap: 8 }}>
                     <Stars value={r.rating} size={15} />

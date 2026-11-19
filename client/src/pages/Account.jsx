@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { useStore } from '../lib/store.jsx';
-import { UserAvatar } from '../components/Avatars.jsx';
+import { AvatarPicker, UserAvatar } from '../components/Avatars.jsx';
 import { ErrorAlert, Field, fieldsOf } from '../components/ui.jsx';
 
 export default function Account() {
   const { t, date } = useI18n();
   const { user, setUser, toast } = useStore();
-  const [form, setForm] = useState({ name: user.name, phone: user.phone });
+  const [form, setForm] = useState({ name: user.name, phone: user.phone, avatar: user.avatar });
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
   const fe = fieldsOf(error);
@@ -19,7 +19,7 @@ export default function Account() {
       <div className="container" style={{ maxWidth: 620 }}>
         <div className="card card-pad">
           <div className="row" style={{ gap: 18, marginBottom: 20 }}>
-            <UserAvatar user={user} size={96} />
+            <UserAvatar user={{ ...user, avatar: form.avatar }} size={96} />
             <div>
               <h1 style={{ marginBottom: 2 }}>{user.name}</h1>
               <div className="muted">{user.email}</div>
@@ -36,7 +36,7 @@ export default function Account() {
               setBusy(true);
               setError(null);
               try {
-                const r = await api.patch('/me', form);
+                const r = await api.patch('/me', { name: form.name, phone: form.phone, ...(form.avatar ? { avatar: form.avatar } : {}) });
                 setUser(r.user);
                 toast(t('profile.saved'));
               } catch (err) {
@@ -46,6 +46,12 @@ export default function Account() {
               }
             }}
           >
+            <div>
+              <div className="label" style={{ marginBottom: 4 }}>{t('avatar.title')}</div>
+              <p className="small muted" style={{ margin: '0 0 8px' }}>{t('avatar.hint')}</p>
+              <AvatarPicker value={form.avatar} onChange={(avatar) => setForm({ ...form, avatar })}
+                labels={{ title: t('avatar.title'), anahit: t('avatar.anahit'), aram: t('avatar.aram') }} />
+            </div>
             <Field label={t('auth.name')} error={fe.name} htmlFor="name">
               <input id="name" className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </Field>

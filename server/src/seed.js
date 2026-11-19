@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { SERVER_ROOT } from './config.js';
 import { hashPassword } from './auth.js';
 import { processImage } from './images.js';
 
@@ -6,6 +9,7 @@ import { processImage } from './images.js';
  * 2 demo buyers, and a few past orders + reviews so ratings and the seller
  * dashboard are not empty. All demo accounts use DEMO_PASSWORD.
  */
+const SEED_IMAGES = path.join(SERVER_ROOT, 'seed-images');
 export const DEMO_PASSWORD = 'shuka1234';
 
 export const CATEGORIES = [
@@ -22,13 +26,13 @@ export const CATEGORIES = [
 ];
 
 const SELLERS = [
-  { key: 'aram', email: 'aram@shuka.test', name: 'Aram Petrosyan', phone: '+37491123456', store: 'Ararat Tech' },
-  { key: 'ani', email: 'ani@shuka.test', name: 'Ani Hakobyan', phone: '+37493234567', store: 'Gyumri Crafts' },
-  { key: 'davit', email: 'davit@shuka.test', name: 'Davit Sargsyan', phone: '+37477345678', store: 'Sevan Market' },
+  { key: 'aram', email: 'aram@shuka.test', name: 'Aram Petrosyan', phone: '+37491123456', store: 'Ararat Tech', avatar: 'aram' },
+  { key: 'ani', email: 'ani@shuka.test', name: 'Ani Hakobyan', phone: '+37493234567', store: 'Gyumri Crafts', avatar: 'anahit' },
+  { key: 'davit', email: 'davit@shuka.test', name: 'Davit Sargsyan', phone: '+37477345678', store: 'Sevan Market', avatar: 'aram' },
 ];
 const BUYERS = [
-  { key: 'lilit', email: 'lilit@shuka.test', name: 'Lilit Grigoryan', phone: '+37494456789' },
-  { key: 'narek', email: 'narek@shuka.test', name: 'Narek Avetisyan', phone: '+37455567890' },
+  { key: 'lilit', email: 'lilit@shuka.test', name: 'Lilit Grigoryan', phone: '+37494456789', avatar: 'anahit' },
+  { key: 'narek', email: 'narek@shuka.test', name: 'Narek Avetisyan', phone: '+37455567890', avatar: 'aram' },
 ];
 
 // [category slug, seller key, title, price AMD, stock, description]
@@ -129,10 +133,10 @@ export async function seedDatabase(db, { log = console.log } = {}) {
     for (const [name, slug] of CATEGORIES) ids.categories[slug] = Number(insCat.run(name, slug).lastInsertRowid);
 
     const insUser = db.prepare(
-      'INSERT INTO users (email, password_hash, name, phone, store_name, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO users (email, password_hash, name, phone, store_name, avatar, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
     );
-    for (const s of SELLERS) ids.users[s.key] = Number(insUser.run(s.email, hash, s.name, s.phone, s.store, isoDaysAgo(90)).lastInsertRowid);
-    for (const b of BUYERS) ids.users[b.key] = Number(insUser.run(b.email, hash, b.name, b.phone, null, isoDaysAgo(60)).lastInsertRowid);
+    for (const s of SELLERS) ids.users[s.key] = Number(insUser.run(s.email, hash, s.name, s.phone, s.store, s.avatar, isoDaysAgo(90)).lastInsertRowid);
+    for (const b of BUYERS) ids.users[b.key] = Number(insUser.run(b.email, hash, b.name, b.phone, null, b.avatar, isoDaysAgo(60)).lastInsertRowid);
   }).immediate();
 
   // 2. Products (created unpublished, published after images exist)
@@ -148,13 +152,18 @@ export async function seedDatabase(db, { log = console.log } = {}) {
     });
   }).immediate();
 
-  // 3. Images — generated and resized outside any transaction, then paths recorded
+  // 3. Images — a real free-licence photo per product (seed-images/NN.jpg, see CREDITS.json);
+  //    the drawn placeholder is only used if a photo is missing. Resized outside any transaction.
   const insImage = db.prepare('INSERT INTO product_images (product_id, file_path, position) VALUES (?, ?, ?)');
   for (let i = 0; i < PRODUCTS.length; i++) {
     const slug = PRODUCTS[i][0];
-    const count = i % 3 === 0 ? 3 : 2;
+    const photo = path.join(SEED_IMAGES, `${String(i).padStart(2, '0')}.jpg`);
     const paths = [];
-    for (let v = 0; v < count; v++) paths.push(await processImage(productSvg(slug, i, v), productIds[i], `seed-${i}-${v}.svg`, { allowSvg: true }));
+    if (fs.existsSync(photo)) {
+      paths.push(await processImage(fs.readFileSync(photo), productIds[i], path.basename(photo)));
+    } else {
+      for (let v = 0; v < 2; v++) paths.push(await processImage(productSvg(slug, i, v), productIds[i], `seed-${i}-${v}.svg`, { allowSvg: true }));
+    }
     db.transaction(() => {
       paths.forEach((p, pos) => insImage.run(productIds[i], p, pos));
       db.prepare('UPDATE products SET is_published = 1 WHERE id = ?').run(productIds[i]);

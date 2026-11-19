@@ -146,7 +146,12 @@ export function Footer() {
           <b style={{ fontFamily: 'var(--serif-hy)', fontSize: '1.2rem', color: '#fff' }} lang="hy">Շուկա</b>
           <div>{t('footer.made')}</div>
         </div>
-        <div className="row"><Icon name="cash" size={18} /> {t('footer.cod')}</div>
+        <div className="stack" style={{ textAlign: 'right' }}>
+          <div className="row" style={{ justifyContent: 'flex-end' }}><Icon name="cash" size={18} /> {t('footer.cod')}</div>
+          <a className="small" href="https://github.com/Mashaakishmiryan/shuka-/blob/main/server/seed-images/CREDITS.md" target="_blank" rel="noreferrer">
+            {t('footer.credits')}
+          </a>
+        </div>
       </div>
     </footer>
   );

@@ -99,8 +99,50 @@ export function Aram({ size = 96, ring = 'lavender', framed = true, className = 
   );
 }
 
-/** Default profile picture: sellers get Aram, buyers get Anahit (as in the mood board). */
+/** Shown until a user picks a portrait: the apron's stepped diamond, no guessing. */
+export function NeutralAvatar({ size = 96, ring = 'lavender', className = '' }) {
+  return (
+    <svg viewBox="0 0 120 120" width={size} height={size} role="img" aria-label="avatar"
+      className={`avatar ${ring === 'rose' ? 'ring-rose' : ''} ${className}`}>
+      <rect width="120" height="120" fill="#6E1530" />
+      <path fill="#E08A8A" d="M52 20h16v8h8v8h8v8h8v8h8v16h-8v8h-8v8h-8v8h-8v8H52v-8h-8v-8h-8v-8h-8v-8h-8V52h8v-8h8v-8h8v-8h8z" />
+      <path fill="#F4EEEA" d="M60 34l26 26-26 26-26-26z" />
+      <path fill="#8E6A72" d="M60 46l14 14-14 14-14-14z" />
+      <path fill="#E9A15B" d="M60 54l6 6-6 6-6-6z" />
+    </svg>
+  );
+}
+
+/** A portrait by key: 'anahit', 'aram', or null (neutral). */
+export function Avatar({ kind, size = 32, ring }) {
+  if (kind === 'anahit') return <Anahit size={size} ring={ring} />;
+  if (kind === 'aram') return <Aram size={size} ring={ring} />;
+  return <NeutralAvatar size={size} ring={ring} />;
+}
+
+/** The user's own chosen portrait. */
 export function UserAvatar({ user, size = 32, ring }) {
-  const Comp = user?.isSeller ? Aram : Anahit;
-  return <Comp size={size} ring={ring} />;
+  return <Avatar kind={user?.avatar} size={size} ring={ring} />;
+}
+
+/** Two big choices; `value` is 'anahit' | 'aram' | null. */
+export function AvatarPicker({ value, onChange, labels }) {
+  return (
+    <div role="radiogroup" aria-label={labels.title} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+      {[['anahit', Anahit, labels.anahit], ['aram', Aram, labels.aram]].map(([key, Comp, label]) => (
+        <button
+          key={key} type="button" role="radio" aria-checked={value === key} onClick={() => onChange(key)}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, padding: '10px 14px',
+            borderRadius: 14, cursor: 'pointer', background: 'var(--surface-2)', color: 'var(--text)', font: 'inherit',
+            fontWeight: 700, border: `2px solid ${value === key ? 'var(--pomegranate)' : 'var(--border)'}`,
+            boxShadow: value === key ? '0 0 0 3px color-mix(in srgb, var(--pomegranate) 20%, transparent)' : 'none',
+          }}
+        >
+          <Comp size={64} />
+          <span className="small">{label}</span>
+        </button>
+      ))}
+    </div>
+  );
 }

@@ -17,6 +17,7 @@ export const messages = {
     'nav.language': 'Language',
     'footer.cod': 'Cash on delivery across Armenia. Prices in AMD.',
     'footer.made': 'Shuka — “market” in Armenian.',
+    'footer.credits': 'Product photo credits (Wikimedia Commons)',
 
     'home.title1': 'A local market dressed in ',
     'home.taraz': 'taraz',
@@ -172,6 +173,10 @@ export const messages = {
     'auth.demo': 'Demo: lilit@shuka.test / shuka1234',
 
     'profile.title': 'My profile',
+    'avatar.title': 'Profile picture',
+    'avatar.hint': 'Choose the portrait that represents you.',
+    'avatar.anahit': 'Anahit',
+    'avatar.aram': 'Aram',
     'profile.save': 'Save changes',
     'profile.saved': 'Saved',
     'profile.memberSince': 'Member since {date}',
@@ -336,6 +341,7 @@ export const messages = {
     'nav.language': 'Լեզու',
     'footer.cod': 'Վճարում առաքման պահին՝ կանխիկ, ամբողջ Հայաստանում։ Գները՝ դրամով։',
     'footer.made': 'Շուկա — վաճառքի և գնումների տեղ։',
+    'footer.credits': 'Լուսանկարների հեղինակներ (Wikimedia Commons)',
 
     'home.title1': 'Տեղական շուկա՝ հագած ',
     'home.taraz': 'տարազ',
@@ -491,6 +497,10 @@ export const messages = {
     'auth.demo': 'Փորձնական՝ lilit@shuka.test / shuka1234',
 
     'profile.title': 'Իմ էջը',
+    'avatar.title': 'Պրոֆիլի նկար',
+    'avatar.hint': 'Ընտրեք այն դիմանկարը, որը ներկայացնում է ձեզ։',
+    'avatar.anahit': 'Անահիտ',
+    'avatar.aram': 'Արամ',
     'profile.save': 'Պահպանել',
     'profile.saved': 'Պահպանված է',
     'profile.memberSince': 'Անդամ է՝ {date}',

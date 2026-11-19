@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../lib/i18n.jsx';
 import { useStore } from '../lib/store.jsx';
 import { SteppedDiamond } from '../components/Motifs.jsx';
+import { AvatarPicker } from '../components/Avatars.jsx';
 import { ErrorAlert, Field, fieldsOf } from '../components/ui.jsx';
 
 /** Only allow redirects to paths on this site. */
@@ -80,7 +81,7 @@ export function Register() {
   const [params] = useSearchParams();
   const nav = useNavigate();
   const next = safeNext(params.get('next'));
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', avatar: null });
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -100,7 +101,7 @@ export function Register() {
           setBusy(true);
           setError(null);
           try {
-            await register(form);
+            await register({ name: form.name, email: form.email, phone: form.phone, password: form.password, ...(form.avatar ? { avatar: form.avatar } : {}) });
             nav(next, { replace: true });
           } catch (err) {
             setError(err);
@@ -108,6 +109,11 @@ export function Register() {
           }
         }}
       >
+        <div>
+          <div className="label" style={{ marginBottom: 6 }}>{t('avatar.title')} <span className="muted" style={{ fontWeight: 500 }}>· {t('checkout.optional')}</span></div>
+          <AvatarPicker value={form.avatar} onChange={(avatar) => setForm((f) => ({ ...f, avatar }))}
+            labels={{ title: t('avatar.title'), anahit: t('avatar.anahit'), aram: t('avatar.aram') }} />
+        </div>
         <Field label={t('auth.name')} error={fe.name} htmlFor="name">
           <input id="name" className="input" autoComplete="name" value={form.name} onChange={set('name')} required />
         </Field>

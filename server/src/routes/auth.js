@@ -7,6 +7,7 @@ import {
 } from '../auth.js';
 
 const router = Router();
+const avatarRule = { type: 'string', oneOf: ['anahit', 'aram'] };
 
 // A real hash to compare against when the email is unknown, so timing does not reveal which emails exist.
 const DUMMY_HASH = await hashPassword('not-a-real-password');
@@ -27,15 +28,15 @@ const meResponse = (user) => ({ user: { ...publicUser(user), lastAddress: lastAd
 // POST /auth/register — anyone
 router.post('/auth/register', async (req, res) => {
   const data = validate(req.body, {
-    email: emailRule, password: passwordRule, name: nameRule, phone: phoneRule,
+    email: emailRule, password: passwordRule, name: nameRule, phone: phoneRule, avatar: avatarRule,
   });
   const db = getDb();
   const hash = await hashPassword(data.password); // hashing happens before (outside) the write
   let user;
   try {
     const { lastInsertRowid } = db
-      .prepare('INSERT INTO users (email, password_hash, name, phone) VALUES (?, ?, ?, ?)')
-      .run(data.email, hash, data.name, data.phone);
+      .prepare('INSERT INTO users (email, password_hash, name, phone, avatar) VALUES (?, ?, ?, ?, ?)')
+      .run(data.email, hash, data.name, data.phone, data.avatar ?? null);
     user = db.prepare('SELECT * FROM users WHERE id = ?').get(lastInsertRowid);
   } catch (e) {
     if (e.code === 'SQLITE_CONSTRAINT_UNIQUE') {
@@ -72,11 +73,12 @@ router.get('/me', requireUser, (req, res) => {
 
 // PATCH /me — signed in: edit name and phone
 router.patch('/me', requireUser, (req, res) => {
-  const data = validate(req.body, { name: nameRule, phone: phoneRule }, { partial: true });
+  const data = validate(req.body, { name: nameRule, phone: phoneRule, avatar: avatarRule }, { partial: true });
   const db = getDb();
   if (Object.keys(data).length) {
-    db.prepare('UPDATE users SET name = COALESCE(?, name), phone = COALESCE(?, phone) WHERE id = ?')
-      .run(data.name ?? null, data.phone ?? null, req.user.id);
+    db.prepare(
+      'UPDATE users SET name = COALESCE(?, name), phone = COALESCE(?, phone), avatar = COALESCE(?, avatar) WHERE id = ?',
+    ).run(data.name ?? null, data.phone ?? null, data.avatar ?? null, req.user.id);
   }
   res.json(meResponse(db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id)));
 });

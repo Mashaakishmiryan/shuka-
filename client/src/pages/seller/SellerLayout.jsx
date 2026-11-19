@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { api } from '../../lib/api.js';
 import { useI18n } from '../../lib/i18n.jsx';
 import { useStore } from '../../lib/store.jsx';
-import { Aram } from '../../components/Avatars.jsx';
+import { UserAvatar } from '../../components/Avatars.jsx';
 import { Icon } from '../../components/ui.jsx';
 
 export default function SellerLayout() {
@@ -22,7 +22,7 @@ export default function SellerLayout() {
     <div className="dash">
       <aside className="dash-side">
         <div className="store">
-          <Aram size={46} />
+          <UserAvatar user={user} size={46} />
           <div><b>{user.storeName}</b><span className="small" style={{ opacity: 0.7 }}>{user.name}</span></div>
         </div>
         <nav aria-label={t('nav.dashboard')}>

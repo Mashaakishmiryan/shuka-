@@ -107,7 +107,7 @@ router.get('/products/:id', (req, res) => {
   const db = getDb();
   const p = db
     .prepare(
-      `SELECT p.*, c.slug AS category_slug, c.name AS category_name, u.store_name
+      `SELECT p.*, c.slug AS category_slug, c.name AS category_name, u.store_name, u.avatar AS seller_avatar
          FROM products p
          JOIN categories c ON c.id = p.category_id
          JOIN users u ON u.id = p.seller_id
@@ -132,7 +132,7 @@ router.get('/products/:id', (req, res) => {
       ratingAvg: Math.round(p.rating_avg * 10) / 10,
       ratingCount: p.rating_count,
       category: { slug: p.category_slug, name: p.category_name },
-      seller: { id: p.seller_id, storeName: p.store_name },
+      seller: { id: p.seller_id, storeName: p.store_name, avatar: p.seller_avatar ?? null },
       isOwn: req.user?.id === p.seller_id,
       images,
       createdAt: p.created_at,
@@ -152,7 +152,7 @@ router.get('/products/:id/reviews', (req, res) => {
   const { total } = db.prepare('SELECT COUNT(*) AS total FROM reviews WHERE product_id = ?').get(id);
   const rows = db
     .prepare(
-      `SELECT r.id, r.rating, r.body, r.created_at, u.name
+      `SELECT r.id, r.rating, r.body, r.created_at, u.name, u.avatar
          FROM reviews r JOIN users u ON u.id = r.buyer_id
         WHERE r.product_id = ?
         ORDER BY r.created_at DESC, r.id DESC LIMIT ? OFFSET ?`,
@@ -160,7 +160,7 @@ router.get('/products/:id/reviews', (req, res) => {
     .all(id, size, (page - 1) * size);
   res.json({
     reviews: rows.map((r) => ({
-      id: r.id, rating: r.rating, body: r.body, createdAt: r.created_at,
+      id: r.id, rating: r.rating, body: r.body, createdAt: r.created_at, avatar: r.avatar ?? null,
       // Show first name + initial only.
       author: r.name.split(/\s+/).map((w, i) => (i === 0 ? w : `${w[0]}.`)).join(' '),
     })),

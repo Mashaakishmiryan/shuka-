@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { useStore } from '../lib/store.jsx';
-import { Aram } from '../components/Avatars.jsx';
+import { UserAvatar } from '../components/Avatars.jsx';
 import { ErrorAlert, Field, Icon, fieldsOf } from '../components/ui.jsx';
 
 export default function BecomeSeller() {
@@ -21,7 +21,7 @@ export default function BecomeSeller() {
       <div className="container" style={{ maxWidth: 860 }}>
         <div className="card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', overflow: 'hidden' }}>
           <div style={{ background: 'var(--pomegranate)', color: '#fff', padding: 28 }}>
-            <Aram size={110} />
+            <UserAvatar user={user} size={110} />
             <h1 style={{ marginTop: 18 }}>{t('sell.title')}</h1>
             <p style={{ color: '#f3d6d6' }}>{t('sell.lead')}</p>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }} className="stack">

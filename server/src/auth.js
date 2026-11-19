@@ -62,7 +62,7 @@ export function loadUser(req, _res, next) {
   const data = readSessionToken(req.cookies?.[COOKIE_NAME]);
   if (data) {
     const user = getDb()
-      .prepare('SELECT id, email, password_hash, name, phone, store_name, created_at FROM users WHERE id = ?')
+      .prepare('SELECT id, email, password_hash, name, phone, store_name, avatar, created_at FROM users WHERE id = ?')
       .get(data.uid);
     if (user && pwFingerprint(user.password_hash) === data.pw) req.user = user;
   }
@@ -88,5 +88,6 @@ export const publicUser = (u) => ({
   phone: u.phone,
   storeName: u.store_name,
   isSeller: Boolean(u.store_name),
+  avatar: u.avatar ?? null,
   createdAt: u.created_at,
 });
