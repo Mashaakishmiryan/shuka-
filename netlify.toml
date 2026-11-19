@@ -1,0 +1,36 @@
+# Netlify hosts the built React app. /api and /uploads are proxied to the
+# Express + SQLite server on Render, so the browser only ever talks to the
+# Netlify domain (the httpOnly session cookie stays first-party).
+#
+# Change RENDER_URL below if your Render service has a different address.
+
+[build]
+  base = "client"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://shuka-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/uploads/*"
+  to = "https://shuka-api.onrender.com/uploads/:splat"
+  status = 200
+  force = true
+
+# Single-page app: every other path serves index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

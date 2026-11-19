@@ -1,0 +1,27 @@
+# Render Blueprint for the Shuka API (Express + SQLite).
+# Render → New → Blueprint → pick this repository → Apply.
+services:
+  - type: web
+    name: shuka-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: SESSION_SECRET
+        generateValue: true
+      # Free plan has no persistent disk: the demo data is re-created on every start.
+      - key: SEED_ON_START
+        value: "true"
+    # On a paid plan, uncomment to keep the database, uploads and backups across deploys:
+    # disk:
+    #   name: shuka-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # and add an env var DATA_DIR=/var/data

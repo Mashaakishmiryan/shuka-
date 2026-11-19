@@ -1,0 +1,20 @@
+{
+  "name": "shuka",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shuka — a local marketplace for Armenia",
+  "scripts": {
+    "setup": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -k -n api,web -c magenta,yellow \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "migrate": "npm --prefix server run migrate",
+    "seed": "npm --prefix server run seed",
+    "seed:reset": "npm --prefix server run seed -- --reset",
+    "backup": "npm --prefix server run backup",
+    "test:breakit": "npm --prefix server run test:breakit"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

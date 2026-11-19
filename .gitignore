@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+# SQLite database, uploaded images and backups live in DATA_DIR, never in Git
+server/data/
+*.db
+*.db-wal
+*.db-shm
+.DS_Store
