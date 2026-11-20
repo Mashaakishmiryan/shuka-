@@ -16,8 +16,11 @@ function LangSwitch() {
   );
 }
 
+const SpeechRecognition = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
+
 function SearchBar() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const [listening, setListening] = useState(false);
   const nav = useNavigate();
   const [params] = useSearchParams();
   const loc = useLocation();
@@ -25,6 +28,23 @@ function SearchBar() {
   useEffect(() => {
     if (loc.pathname === '/search') setQ(params.get('q') || '');
   }, [loc.pathname, params]);
+  const go = (text) => {
+    const next = new URLSearchParams();
+    if (text.trim()) next.set('q', text.trim());
+    if (loc.pathname === '/search' && params.get('category')) next.set('category', params.get('category'));
+    nav(`/search${next.toString() ? `?${next}` : ''}`);
+  };
+  const listen = () => {
+    if (!SpeechRecognition || listening) return;
+    const rec = new SpeechRecognition();
+    rec.lang = lang === 'hy' ? 'hy-AM' : 'en-US';
+    rec.interimResults = false;
+    rec.onresult = (e) => { const text = e.results[0][0].transcript; setQ(text); go(text); };
+    rec.onend = () => setListening(false);
+    rec.onerror = () => setListening(false);
+    setListening(true);
+    rec.start();
+  };
   return (
     <form
       className="search" role="search"
@@ -38,6 +58,10 @@ function SearchBar() {
       }}
     >
       <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('nav.searchPlaceholder')} aria-label={t('nav.search')} enterKeyHint="search" />
+      {q && <button type="button" aria-label={t('nav.clear')} onClick={() => setQ('')}><Icon name="x" size={16} /></button>}
+      {SpeechRecognition && (
+        <button type="button" className={listening ? 'listening' : ''} aria-label={t('nav.voice')} onClick={listen}><Icon name="mic" size={18} /></button>
+      )}
       <button type="submit" aria-label={t('nav.search')}><Icon name="search" /></button>
     </form>
   );
@@ -63,14 +87,14 @@ function AccountMenu() {
   if (!user) {
     return (
       <Link className="icon-btn" to={`/login?next=${encodeURIComponent(loc.pathname + loc.search)}`}>
-        <Icon name="user" /> <span className="label">{t('nav.signIn')}</span>
+        <Icon name="user" size={22} /> <span className="label">{t('nav.signIn')}</span>
       </Link>
     );
   }
   return (
     <div className="menu" ref={ref}>
       <button type="button" className="icon-btn" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-        <UserAvatar user={user} size={28} ring="rose" />
+        <UserAvatar user={user} size={24} ring="rose" />
         <span className="label">{user.name.split(' ')[0]}</span>
       </button>
       {open && (
@@ -98,7 +122,7 @@ function AccountMenu() {
 
 export function Header() {
   const { t, category } = useI18n();
-  const { cartCount, categories } = useStore();
+  const { cartCount, categories, favorites } = useStore();
   const [params] = useSearchParams();
   const loc = useLocation();
   const activeCat = loc.pathname === '/search' ? params.get('category') : null;
@@ -112,12 +136,17 @@ export function Header() {
         <SearchBar />
         <div className="header-actions">
           <LangSwitch />
+          <Link to="/favorites" className="icon-btn" aria-label={`${t('nav.favorites')} (${favorites.length})`}>
+            <Icon name="heart" size={22} />
+            <span className="label">{t('nav.favorites')}</span>
+            {favorites.length > 0 && <span className="badge-count">{favorites.length}</span>}
+          </Link>
+          <AccountMenu />
           <Link to="/cart" className="icon-btn" aria-label={`${t('nav.cart')} (${cartCount})`}>
             <Icon name="cart" size={22} />
             <span className="label">{t('nav.cart')}</span>
             {cartCount > 0 && <span className="badge-count">{cartCount > 99 ? '99+' : cartCount}</span>}
           </Link>
-          <AccountMenu />
         </div>
       </div>
       <nav className="cat-nav" aria-label={t('nav.categories')}>
@@ -143,7 +172,7 @@ export function Footer() {
     <footer className="site-footer">
       <div className="inner">
         <div>
-          <b style={{ fontFamily: 'var(--serif-hy)', fontSize: '1.2rem', color: '#fff' }} lang="hy">Շուկա</b>
+          <b style={{ fontFamily: 'var(--serif-hy)', fontSize: '1.3rem', color: '#fff' }} lang="hy">Շուկա</b>
           <div>{t('footer.made')}</div>
         </div>
         <div className="stack" style={{ textAlign: 'right' }}>

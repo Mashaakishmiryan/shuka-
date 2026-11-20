@@ -1,4 +1,6 @@
-import { Link, Navigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { api } from '../lib/api.js';
 import { useI18n } from '../lib/i18n.jsx';
 import { useStore } from '../lib/store.jsx';
 import { SteppedDiamond, Spinner } from './Motifs.jsx';
@@ -24,6 +26,10 @@ const paths = {
   alert: 'M12 9v4m0 4h.01M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z',
   x: 'M6 6l12 12M18 6 6 18',
   eye: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  heart: 'M12 20.5s-7.5-4.6-9.3-9.2C1.5 8.2 3.4 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.6 0 5.5 3.7 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z',
+  mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3',
+  arrowLeft: 'M19 12H5m6-6-6 6 6 6',
+  arrowRight: 'M5 12h14m-6-6 6 6-6 6',
 };
 export function Icon({ name, size = 20, stroke = 1.9, className }) {
   return (
@@ -48,7 +54,8 @@ export function RatingLine({ avg, count }) {
   if (!count) return <span className="rating-line"><Stars value={0} /></span>;
   return (
     <span className="rating-line">
-      <Stars value={avg} /> <b style={{ color: 'var(--text)' }}>{avg.toFixed(1)}</b> ({t('product.reviewsCount', { n: count })})
+      <Stars value={avg} /> <b style={{ color: 'var(--text)' }}>{avg.toFixed(1)}</b>
+      <span title={t('product.reviewsCount', { n: count })}>({count})</span>
     </span>
   );
 }
@@ -61,10 +68,56 @@ export function StockLabel({ stock }) {
   return <span className="stock in"><Icon name="check" size={16} /> {t('product.inStock')}</span>;
 }
 
+export function FavButton({ p }) {
+  const { t } = useI18n();
+  const { isFavorite, toggleFavorite } = useStore();
+  const on = isFavorite(p.id);
+  return (
+    <button
+      type="button" className="fav-btn" aria-pressed={on} aria-label={on ? t('fav.remove') : t('fav.add')}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(p.id); }}
+    >
+      <Icon name="heart" size={18} />
+    </button>
+  );
+}
+
+function QuickAdd({ p }) {
+  const { t, errorText } = useI18n();
+  const { user, cart, setCart, toast } = useStore();
+  const nav = useNavigate();
+  const [state, setState] = useState('idle');
+  const inCart = cart?.groups.flatMap((g) => g.items).find((i) => i.productId === p.id)?.quantity || 0;
+  if (p.stock === 0 || (user && p.storeName && user.storeName === p.storeName)) return null;
+  return (
+    <button
+      type="button" className={`quick-add ${state === 'done' ? 'done' : ''}`} disabled={state === 'busy' || (user && inCart >= p.stock)}
+      onClick={async (e) => {
+        e.preventDefault(); e.stopPropagation();
+        if (!user) { nav(`/login?next=${encodeURIComponent(`/products/${p.id}`)}`); return; }
+        setState('busy');
+        try {
+          const r = await api.put(`/cart/items/${p.id}`, { quantity: inCart + 1, acceptPrice: true });
+          setCart(r.cart);
+          setState('done');
+          toast(t('product.added'));
+          setTimeout(() => setState('idle'), 1500);
+        } catch (err) {
+          setState('idle');
+          toast(errorText(err), 'error');
+        }
+      }}
+    >
+      {state === 'done' ? <><Icon name="check" size={14} /> {t('card.added')}</> : <><Icon name="plus" size={14} /> {t('card.add')}</>}
+    </button>
+  );
+}
+
 export function ProductCard({ p }) {
   const { amd, t } = useI18n();
   return (
     <Link to={`/products/${p.id}`} className="product-card">
+      <FavButton p={p} />
       <div className="thumb">
         {p.image ? <img src={p.image.thumb} alt="" loading="lazy" width="400" height="400" /> : null}
         {p.stock === 0 && <span className="flag pill">{t('product.outOfStock')}</span>}
@@ -75,6 +128,7 @@ export function ProductCard({ p }) {
         {p.storeName && <span className="store">{p.storeName}</span>}
         <RatingLine avg={p.ratingAvg} count={p.ratingCount} />
         <span className="price" style={{ marginTop: 'auto' }}>{amd(p.priceAmd)}</span>
+        <QuickAdd p={p} />
       </div>
     </Link>
   );

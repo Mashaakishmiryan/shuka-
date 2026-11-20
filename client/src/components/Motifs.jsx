@@ -7,11 +7,11 @@ export function SteppedDiamond({ size = 64, spin = false, className = '', title 
       width={size} height={size} viewBox="0 0 32 32" className={`${spin ? 'diamond-spin' : ''} ${className}`}
       role={title ? 'img' : 'presentation'} aria-hidden={title ? undefined : true} aria-label={title}
     >
-      <path fill="#E08A8A" d="M14 2h4v2h2v2h2v2h2v2h2v2h2v2h2v4h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-4v-2h-2v-2h-2v-2H8v-2H6v-2H4v-2H2v-4h2v-2h2v-2h2V8h2V6h2V4h2z" />
-      <path fill="#F4EEEA" d="M16 7l9 9-9 9-9-9z" />
-      <path fill="#8E6A72" d="M16 10.5l5.5 5.5-5.5 5.5-5.5-5.5z" />
-      <path fill="#4A0D21" d="M16 13l3 3-3 3-3-3z" />
-      <path fill="#E9A15B" d="M16 14.6l1.4 1.4-1.4 1.4-1.4-1.4z" />
+      <path fill="#F4AAA5" d="M14 2h4v2h2v2h2v2h2v2h2v2h2v2h2v4h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-4v-2h-2v-2h-2v-2H8v-2H6v-2H4v-2H2v-4h2v-2h2v-2h2V8h2V6h2V4h2z" />
+      <path fill="#F8F3ED" d="M16 7l9 9-9 9-9-9z" />
+      <path fill="#D83935" d="M16 10.5l5.5 5.5-5.5 5.5-5.5-5.5z" />
+      <path fill="#A82B28" d="M16 13l3 3-3 3-3-3z" />
+      <path fill="#F9AF51" d="M16 14.6l1.4 1.4-1.4 1.4-1.4-1.4z" />
     </svg>
   );
 }

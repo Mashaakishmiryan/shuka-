@@ -3,6 +3,7 @@ import { StoreLayout, ScrollToTop, Toasts } from './components/Layout.jsx';
 import { RequireUser, NotFound } from './components/ui.jsx';
 import Home from './pages/Home.jsx';
 import Search from './pages/Search.jsx';
+import Favorites from './pages/Favorites.jsx';
 import Product from './pages/Product.jsx';
 import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
@@ -27,6 +28,7 @@ export default function App() {
         <Route element={<StoreLayout />}>
           <Route index element={<Home />} />
           <Route path="search" element={<Search />} />
+          <Route path="favorites" element={<Favorites />} />
           <Route path="products/:id" element={<Product />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />

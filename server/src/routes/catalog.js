@@ -37,11 +37,18 @@ router.get('/categories', (_req, res) => {
   const rows = getDb()
     .prepare(
       `SELECT c.id, c.name, c.slug,
-              (SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.is_published = 1) AS product_count
+              (SELECT COUNT(*) FROM products p WHERE p.category_id = c.id AND p.is_published = 1) AS product_count,
+              (SELECT pi.file_path FROM products p JOIN product_images pi ON pi.product_id = p.id
+                WHERE p.category_id = c.id AND p.is_published = 1
+                ORDER BY p.rating_count DESC, p.created_at DESC, pi.position LIMIT 1) AS image
          FROM categories c ORDER BY c.id`,
     )
     .all();
-  res.json({ categories: rows.map((c) => ({ id: c.id, name: c.name, slug: c.slug, productCount: c.product_count })) });
+  res.json({
+    categories: rows.map((c) => ({
+      id: c.id, name: c.name, slug: c.slug, productCount: c.product_count, image: imageUrls(c.image),
+    })),
+  });
 });
 
 // GET /products?q=&category=&minPrice=&maxPrice=&sort=&page= — anyone

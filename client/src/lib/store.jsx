@@ -12,6 +12,17 @@ export function StoreProvider({ children }) {
   const [cart, setCart] = useState(null);
   const [categories, setCategories] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('shuka.favorites') || '[]').filter(Number.isInteger); } catch { return []; }
+  });
+  const toggleFavorite = useCallback((id) => {
+    setFavorites((fs) => {
+      const next = fs.includes(id) ? fs.filter((x) => x !== id) : [id, ...fs].slice(0, 200);
+      try { localStorage.setItem('shuka.favorites', JSON.stringify(next)); } catch { /* storage unavailable */ }
+      return next;
+    });
+  }, []);
+  const isFavorite = useCallback((id) => favorites.includes(id), [favorites]);
   const toastId = useRef(0);
 
   const toast = useCallback((text, kind = 'ok') => {
@@ -75,9 +86,9 @@ export function StoreProvider({ children }) {
     () => ({
       user, setUser, refreshUser, login, register, logout,
       cart, setCart, refreshCart, cartCount: cart?.itemCount || 0,
-      categories, toast, toasts,
+      categories, toast, toasts, favorites, toggleFavorite, isFavorite,
     }),
-    [user, refreshUser, login, register, logout, cart, refreshCart, categories, toast, toasts],
+    [user, refreshUser, login, register, logout, cart, refreshCart, categories, toast, toasts, favorites, toggleFavorite, isFavorite],
   );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

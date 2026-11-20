@@ -5,6 +5,7 @@ import { idParam, validate, nameRule, phoneRule, REGIONS } from '../validate.js'
 import { requireUser } from '../auth.js';
 import { imageUrls } from '../images.js';
 import { allowedMoves, changeStatus } from '../lifecycle.js';
+import { productCard } from './catalog.js';
 
 const router = Router();
 router.use('/orders', requireUser);
@@ -140,6 +141,27 @@ router.post('/orders', (req, res) => {
 
   if (result.existing) return replay(result.existing);
   res.status(201).json({ order: result.order, duplicate: false });
+});
+
+// GET /orders/again — products this buyer ordered before that are still for sale ("Order again")
+router.get('/orders/again', (req, res) => {
+  const rows = getDb()
+    .prepare(
+      `SELECT p.*, u.store_name,
+              (SELECT file_path FROM product_images pi WHERE pi.product_id = p.id ORDER BY position LIMIT 1) AS main_image,
+              MAX(o.id) AS last_order
+         FROM orders o
+         JOIN seller_orders so ON so.order_id = o.id
+         JOIN order_items oi ON oi.seller_order_id = so.id
+         JOIN products p ON p.id = oi.product_id
+         JOIN users u ON u.id = p.seller_id
+        WHERE o.buyer_id = ? AND p.is_published = 1 AND so.status != 'cancelled'
+        GROUP BY p.id
+        ORDER BY last_order DESC
+        LIMIT 12`,
+    )
+    .all(req.user.id);
+  res.json({ items: rows.map(productCard) });
 });
 
 // GET /orders — the signed-in buyer's orders, newest first

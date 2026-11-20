@@ -5,12 +5,12 @@
  */
 const SKIN = '#EE9F86';
 const SKIN_SHADE = '#E08A74';
-const PLUM = '#3A1F2E';
+const PLUM = '#2F2626';
 const BLUSH = '#F2867E';
-const LAV = '#C9C8E6';
-const LAV_DARK = '#B4B2DA';
-const WINE = '#8E1D3E';
-const PERI = '#7C7DB8';
+const LAV = '#EFE6DC';
+const LAV_DARK = '#DCCFC2';
+const WINE = '#D83935';
+const PERI = '#4E4E4E';
 
 function Eyes({ y = 58, gap = 13 }) {
   return (
@@ -33,11 +33,11 @@ export function Anahit({ size = 96, ring = 'lavender', framed = true, className 
       viewBox="0 0 120 120" width={size} height={size} role="img" aria-label="Anahit"
       className={framed ? `avatar ${ring === 'rose' ? 'ring-rose' : ''} ${className}` : className}
     >
-      {framed && <rect width="120" height="120" fill="#F8F6FB" />}
+      {framed && <rect width="120" height="120" fill="#FFF4EC" />}
       {/* veil over head and shoulders */}
       <path d="M60 8c-26 0-38 22-38 48v52c0 8 76 8 76 0V56C98 30 86 8 60 8z" fill={LAV} />
       <path d="M24 102c12-8 60-8 72 0v18H24z" fill={LAV_DARK} opacity=".55" />
-      <path d="M32 110c16-5 40-5 56 0" stroke="#A6A3CF" strokeWidth="1.6" fill="none" />
+      <path d="M32 110c16-5 40-5 56 0" stroke="#CFC2B4" strokeWidth="1.6" fill="none" />
       {/* hair framing the face */}
       <path d="M36 48c0-18 10-28 24-28s24 10 24 28v40H74l-2-30H48l-2 30H36z" fill={PLUM} />
       {/* neck and face */}
@@ -46,8 +46,8 @@ export function Anahit({ size = 96, ring = 'lavender', framed = true, className 
       <path d="M41 46c4-10 12-14 19-14s15 4 19 14c-8-5-30-5-38 0z" fill={PLUM} />
       {/* wine-red cap with a dotted band */}
       <path d="M38 36c0-16 10-26 22-26s22 10 22 26c-14-4-30-4-44 0z" fill={WINE} />
-      <path d="M44 22c4 2 8 2 12 0s8-2 12 0" stroke="#C04A6A" strokeWidth="1.5" fill="none" />
-      <path d="M44 29c4 2 8 2 12 0s8-2 12 0" stroke="#C04A6A" strokeWidth="1.5" fill="none" />
+      <path d="M44 22c4 2 8 2 12 0s8-2 12 0" stroke="#F7B8B0" strokeWidth="1.5" fill="none" />
+      <path d="M44 29c4 2 8 2 12 0s8-2 12 0" stroke="#F7B8B0" strokeWidth="1.5" fill="none" />
       {[42, 48, 54, 60, 66, 72, 78].map((x) => <circle key={x} cx={x} cy="35.5" r="1.4" fill="#F4EEEA" />)}
       <Eyes y={58} gap={8.5} />
       <circle cx="47" cy="68" r="4.5" fill={BLUSH} opacity=".75" />
@@ -67,12 +67,12 @@ export function Aram({ size = 96, ring = 'lavender', framed = true, className = 
       viewBox="0 0 120 120" width={size} height={size} role="img" aria-label="Aram"
       className={framed ? `avatar ${ring === 'rose' ? 'ring-rose' : ''} ${className}` : className}
     >
-      {framed && <rect width="120" height="120" fill="#F8F6FB" />}
+      {framed && <rect width="120" height="120" fill="#FFF4EC" />}
       {/* periwinkle shirt with embroidered collar */}
       <path d="M22 120c0-20 16-30 38-30s38 10 38 30z" fill={PERI} />
-      <path d="M60 92l-4 4 4 14 4-14z" fill="#5E5FA0" />
+      <path d="M60 92l-4 4 4 14 4-14z" fill="#F9AF51" />
       {[[42, 98], [49, 95], [71, 95], [78, 98]].map(([x, y]) => (
-        <path key={x} d={`M${x - 3} ${y}l3 -2.5 3 2.5 -3 2.5z`} fill="none" stroke="#5E5FA0" strokeWidth="1.3" />
+        <path key={x} d={`M${x - 3} ${y}l3 -2.5 3 2.5 -3 2.5z`} fill="none" stroke="#F9AF51" strokeWidth="1.3" />
       ))}
       <path d="M53 80h14v14c-4 3-10 3-14 0z" fill={SKIN_SHADE} />
       {/* ears + face */}
@@ -85,10 +85,10 @@ export function Aram({ size = 96, ring = 'lavender', framed = true, className = 
       {/* hair */}
       <path d="M38 50c-2-22 10-34 24-34 14 0 24 10 21 34-4-8-10-12-22-12s-18 4-23 12z" fill={PLUM} />
       {/* lavender headband with a loose tail */}
-      <path d="M38 42c14-6 30-6 44 0l-1 6c-14-5-28-5-42 0z" fill={LAV} />
-      <path d="M41 44c-6 2-10 10-12 22l5-1c2-9 5-15 9-17z" fill={LAV_DARK} />
-      <path d="M41 45c-3 4-4 12-3 20l4-1c-1-7 0-13 2-17z" fill={LAV} />
-      <circle cx="41" cy="45" r="3.2" fill={LAV_DARK} />
+      <path d="M38 42c14-6 30-6 44 0l-1 6c-14-5-28-5-42 0z" fill={WINE} />
+      <path d="M41 44c-6 2-10 10-12 22l5-1c2-9 5-15 9-17z" fill="#A82B28" />
+      <path d="M41 45c-3 4-4 12-3 20l4-1c-1-7 0-13 2-17z" fill={WINE} />
+      <circle cx="41" cy="45" r="3.2" fill="#A82B28" />
       <Eyes y={56} gap={9} />
       <circle cx="46" cy="66" r="4.2" fill={BLUSH} opacity=".7" />
       <circle cx="74" cy="66" r="4.2" fill={BLUSH} opacity=".7" />
@@ -104,11 +104,11 @@ export function NeutralAvatar({ size = 96, ring = 'lavender', className = '' }) 
   return (
     <svg viewBox="0 0 120 120" width={size} height={size} role="img" aria-label="avatar"
       className={`avatar ${ring === 'rose' ? 'ring-rose' : ''} ${className}`}>
-      <rect width="120" height="120" fill="#6E1530" />
-      <path fill="#E08A8A" d="M52 20h16v8h8v8h8v8h8v8h8v16h-8v8h-8v8h-8v8h-8v8H52v-8h-8v-8h-8v-8h-8v-8h-8V52h8v-8h8v-8h8v-8h8z" />
-      <path fill="#F4EEEA" d="M60 34l26 26-26 26-26-26z" />
-      <path fill="#8E6A72" d="M60 46l14 14-14 14-14-14z" />
-      <path fill="#E9A15B" d="M60 54l6 6-6 6-6-6z" />
+      <rect width="120" height="120" fill="#D83935" />
+      <path fill="#F4AAA5" d="M52 20h16v8h8v8h8v8h8v8h8v16h-8v8h-8v8h-8v8h-8v8H52v-8h-8v-8h-8v-8h-8v-8h-8V52h8v-8h8v-8h8v-8h8z" />
+      <path fill="#F8F3ED" d="M60 34l26 26-26 26-26-26z" />
+      <path fill="#A82B28" d="M60 46l14 14-14 14-14-14z" />
+      <path fill="#F9AF51" d="M60 54l6 6-6 6-6-6z" />
     </svg>
   );
 }
